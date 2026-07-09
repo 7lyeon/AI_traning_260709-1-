@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 혈당측정계 - 프리시전 가드</title>
+    <style>
+        /* 기본 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Noto Sans KR';
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 헤더 & 네비게이션 */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0056b3;
+            letter-spacing: -0.5px;
+        }
+
+        /* 메인 히어로 섹션 */
+        .hero {
+            background: linear-gradient(135deg, #e6f0fa 0%, #f4f8fc 100%);
+            padding: 80px 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .hero-text {
+            flex: 1.2;
+            min-width: 320px;
+        }
+
+        .hero-text h1 {
+            font-size: 38px;
+            color: #111;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .hero-text p {
+            font-size: 17px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .btn-buy {
+            display: inline-block;
+            background-color: #0056b3;
+            color: white;
+            padding: 14px 35px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-buy:hover {
+            background-color: #004085;
+            transform: translateY(-1px);
+        }
+
+        .hero-image {
+            flex: 0.8;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        /* 탭 구조 영역 */
+        .tab-container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .tab-menu {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 30px;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab-btn:hover {
+            color: #0056b3;
+            background-color: #eef4fa;
+        }
+
+        .tab-btn.active {
+            color: #0056b3;
+            background-color: #ffffff;
+            border-bottom: 3px solid #0056b3;
+            margin-bottom: -2px;
+        }
+
+        /* 탭 내부 콘텐츠 공통 */
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content h2 {
+            font-size: 24px;
+            color: #111;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .tab-content h2::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #0056b3;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* 탭 1: 제품 특징 스타일 */
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-top: 4px solid #0056b3;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        .feature-card h4 {
+            font-size: 18px;
+            color: #0056b3;
+            margin-bottom: 12px;
+        }
+
+        /* 탭 2: 사용 방법 스타일 */
+        .step-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .step-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0056b3;
+            margin-bottom: 15px;
+            background: #e6f0fa;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+        }
+        .step-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #111;
+        }
+
+        /* 탭 3: 기술 사양 테이블 스타일 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 14px 18px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+            color: #495057;
+            width: 30%;
+        }
+
+        /* 탭 4: FAQ 스타일 */
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #efefef;
+            padding-bottom: 20px;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-q {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0056b3;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .faq-a {
+            font-size: 15px;
+            color: #555;
+            padding-left: 28px;
+        }
+
+        /* 푸터 및 법적 고지 */
+        footer {
+            background-color: #2b3035;
+            color: #adb5bd;
+            padding: 35px 8%;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 5px solid #1a1e21;
+        }
+        footer p {
+            margin-bottom: 8px;
+        }
+        .medical-warning {
+            color: #ffc107;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* 반응형 모바일 대책 */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding: 40px 5%; }
+            .hero-text { padding-right: 0; }
+            .hero-image img { max-width: 280px; }
+            .tab-menu { flex-direction: column; }
+            .tab-btn { border-radius: 4px; border: 1px solid #dee2e6; margin-bottom: 5px; }
+            .tab-btn.active { border-bottom: 1px solid #0056b3; background-color: #0056b3; color: white; }
+            .tab-content { padding: 25px 20px; }
+            th, td { display: block; width: 100%; }
+            th { background-color: #e9ecef; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">PrecisionGuard™</div>
+        <div style="font-size: 14px; color: #666; font-weight: 600;">고객지원센터: 1588-0000</div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>당신의 일상을 더 자유롭게,<br>스마트 혈당 관리의 시작.</h1>
+            <p>0.5㎕의 최소 채혈량과 5초 만의 정밀 측정 기술을 경험해 보세요. Bluetooth 무선 연동 시스템을 탑재하여 별도의 수기 기록 없이 모든 측정 데이터가 스마트폰 앱에 안전하고 명확하게 자동 저장됩니다.</p>
+            <a href="#tab-anchor" class="btn-buy" onclick="document.getElementById('tab-anchor').scrollIntoView({behavior: 'smooth'});">제품 상세 정보 보기</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80" alt="스마트 혈당측정기 제품 이미지">
+        </div>
+    </section>
+
+    <div id="tab-anchor"></div>
+
+    <div class="tab-container">
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="openTab(event, 'features')">제품 특징</button>
+            <button class="tab-btn" onclick="openTab(event, 'steps')">사용 방법</button>
+            <button class="tab-btn" onclick="openTab(event, 'specs')">기술 데이터</button>
+            <button class="tab-btn" onclick="openTab(event, 'faq')">자주 묻는 질문(FAQ)</button>
+        </div>
+
+        <div id="features" class="tab-content active">
+            <h2>정밀하고 철저한 당뇨 관리 솔루션</h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h4>오차 없는 국제 기준 충족</h4>
+                    <p>엄격한 국제 표준인 ISO 15197:2013 정밀도 오차 평가 기준을 전방위적으로 충족하여, 검사실 수준의 정교하고 신뢰할 수 있는 결과값을 상시 제공합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>통증 최소화 마이크로 채혈</h4>
+                    <p>단 0.5㎕의 아주 미세한 양의 혈액만으로 측정이 완료되므로, 바늘 찌름 깊이를 최소화하여 매일 반복되는 채혈 통증 부담을 획기적으로 낮췄습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>라이프 자동 연동 시스템</h4>
+                    <p>BLE(Bluetooth Low Energy) 통신 규격을 탑재하여 기기가 켜지면 앱과 실시간 자동 매칭됩니다. 식전·식후 상태 분류 및 변동 추이 그래프를 즉시 확인할 수 있습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="steps" class="tab-content">
+            <h2>3단계 올바른 측정 가이드</h2>
+            <p style="margin-bottom: 25px; color:#666; font-size: 15px;">※ 측정 전 감염 예방과 잔여 당분 제거를 위해 흐르는 물에 손을 깨끗이 씻고 완벽하게 건조해 주십시오.</p>
+            <div class="content-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <h4>검사지 삽입</h4>
+                    <p>측정기가 꺼진 상태에서 검사지 스트립을 전면 삽입구에 끝까지 밀어 넣으면, 전원이 자동으로 켜지며 대기 상태가 됩니다.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <h4>미량 혈액 채혈 및 점적</h4>
+                    <p>채혈기를 이용해 손가락 가장자리를 가볍게 채혈한 후, 검사지 끝부분에 혈액 유입구를 대어 혈액이 자동으로 흡입되도록 합니다.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <h4>5초 대기 및 결과 확인</h4>
+                    <p>화면에 카운트다운이 표시되며, 5초 후 정확한 혈당 수치 결과값이 화면에 표기되고 연동된 스마트폰 앱으로 자동 전송됩니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="specs" class="tab-content">
+            <h2>제품 기술 및 성능 사양 사양서</h2>
+            <p style="margin-bottom: 20px; color:#666; font-size: 15px;">본 기기는 국가 보건 규격 및 의료기기 제조 기준(GMP)에 근거하여 엄격히 관리 생산되는 제품입니다.</p>
+            <table>
+                <tr>
+                    <th>측정 범위 (Measurement Range)</th>
+                    <td>10 ~ 600 mg/dL</td>
+                </tr>
+                <tr>
+                    <th>필요 혈액량 (Sample Volume)</th>
+                    <td>0.5 ㎕ (최소 미량 흡입 방식)</td>
+                </tr>
+                <tr>
+                    <th>측정 시간 (Measurement Time)</th>
+                    <td>5 초</td>
+                </tr>
+                <tr>
+                    <th>검사체 종류 (Sample Type)</th>
+                    <td>신선한 모세혈 전혈 (Capillary Whole Blood)</td>
+                </tr>
+                <tr>
+                    <th>데이터 저장 용량 (Memory)</th>
+                    <td>최근 500회 측정 결과값 기록 (날짜 및 시간 포함)</td>
+                </tr>
+                <tr>
+                    <th>무선 통신 방식 (Wireless Link)</th>
+                    <td>Bluetooth Low Energy (BLE 5.0 가용)</td>
+                </tr>
+                <tr>
+                    <th>기기 작동 환경 (Operation Range)</th>
+                    <td>온도: 10°C ~ 40°C / 상대습도: 10% ~ 90% 이내</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="faq" class="tab-content">
+            <h2>자주 묻는 질문 (FAQ)</h2>
+            <div class="faq-item">
+                <div class="faq-q">Q. 화면에 'Er1' 이라는 에러 코드가 뜹니다. 어떤 의미인가요?</div>
+                <div class="faq-a">A. Er1 코드는 이미 사용했거나 오염된 검사지 스트립을 삽입했을 때 발생하는 오류입니다. 새 검사지를 꺼내어 다시 삽입해 주십시오.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Q. 스마트폰과 블루투스 연결이 자꾸 끊어집니다. 어떻게 하나요?</div>
+                <div class="faq-a">A. 측정기 기기와 스마트폰 간 거리가 5m 이상 떨어지거나 주변 일대에 무선 간섭이 심할 경우 일시 정지될 수 있습니다. 스마트폰의 블루투스 설정을 완전히 껐다 켠 뒤, 전용 앱을 재실행해 주십시오. 기기가 켜지면 무조건 최우선 재동기화됩니다.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Q. 검사지 스트립 및 랜싯(채혈침)은 재사용이 가능한가요?</div>
+                <div class="faq-a">A. 안전 및 감염 예방과 부정확한 측정값 유발을 막기 위하여 검사지와 채혈침은 **반드시 1회용으로만 사용**하셔야 합니다. 사용한 소모품은 전용 폐기 절차에 따라 즉시 버려주십시오.</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p class="medical-warning">※ 본 제품은 '의료기기'이며, 사용 전 반드시 사용설명서의 '주의사항'과 '사용방법'을 숙지하신 후 올바르게 사용하십시오.</p>
+        <p>상호명: (주)프리시전케어메디칼 | 대표자: 홍길동 | 사업자등록번호: 000-00-00000</p>
+        <p>의료기기 제조업 허가번호: 제 서울-XXXX호 | 의료기기 광고사전심의 필증: 심의번호 제 2026-I10-00-0000호</p>
+        <p style="margin-top: 15px; color: #6c757d;">&copy; 2026 PrecisionCare Medical Co., Ltd. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            // 1. 모든 탭 콘텐츠 숨기기
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+
+            // 2. 모든 탭 버튼 활성화 클래스(active) 제거
+            const tabButtons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+
+            // 3. 선택된 탭 콘텐츠 보여주기 및 해당 버튼 활성화
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
